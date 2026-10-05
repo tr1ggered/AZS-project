@@ -1,0 +1,16 @@
+# Виртуальное окружение
+.venv/
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+
+# Кэш pytest
+.pytest_cache/
+
+# Локальные переменные и секреты
+.env
+.env.*
+!.env.example
+
+DEVELOPMENT_PLAN.md
