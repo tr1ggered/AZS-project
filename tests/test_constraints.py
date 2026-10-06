@@ -1,6 +1,6 @@
 import pytest
 
-from constaints import check_plan
+from constraints import check_plan
 from models import Depot, Station
 
 

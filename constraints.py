@@ -4,7 +4,7 @@ from numbers import Real
 import numpy as np
 from numpy.typing import ArrayLike
 
-from models import Depot, Station, Violation
+from models import Depot, FeasibilityReport, LinearConstraints, Station, Violation
 
 ATOL = 1e-7
 RTOL = 1e-7
@@ -38,10 +38,14 @@ def validate_data(
 
             for field in fields:
                 value = getattr(obj, field)
+                try:
+                    finite = isfinite(value) if isinstance(value, Real) else False
+                except OverflowError:
+                    finite = False
                 if (
                     isinstance(value, bool)
                     or not isinstance(value, Real)
-                    or not isfinite(value)
+                    or not finite
                     or value < 0
                 ):
                     raise ValueError(
@@ -85,10 +89,10 @@ def check_plan(
             shipped = x.sum(axis=1)   # По строкам: отгрузки нефтебаз.
             received = x.sum(axis=0)  # По столбцам: поступления на АЗС.
             after_delivery = received + np.array(
-                [station.remaining for station in stations]
+                [station.remaining for station in stations], dtype=float
             )
             after_consumption = after_delivery - np.array(
-                [station.demand for station in stations]
+                [station.demand for station in stations], dtype=float
             )
     except FloatingPointError as error:
         raise ValueError("Слишком большие объёмы для расчёта.") from error
@@ -140,3 +144,106 @@ def check_plan(
             ))
 
     return violations
+
+
+def _station_limits(stations: list[Station]) -> tuple[np.ndarray, np.ndarray]:
+    """Границы поступлений; вызывается после validate_data."""
+    remaining = np.array([s.remaining for s in stations], dtype=float)
+    demand = np.array([s.demand for s in stations], dtype=float)
+    safety = np.array([s.safety for s in stations], dtype=float)
+    capacity = np.array([s.capacity for s in stations], dtype=float)
+    try:
+        with np.errstate(over="raise", invalid="raise"):
+            required = demand + safety - remaining
+            available = capacity - remaining
+    except FloatingPointError as error:
+        raise ValueError("Слишком большие объёмы для расчёта границ.") from error
+    return required, available
+
+
+def check_feasibility(
+    depots: list[Depot],
+    stations: list[Station],
+) -> FeasibilityReport:
+    """Проверить выполнимость без заданного плана, с численным допуском.
+
+    Условия достаточны только при доступности всех направлений и отсутствии
+    дополнительных ограничений транспорта. План поставок здесь не строится.
+    """
+    validate_data(depots, stations)
+    required, available = _station_limits(stations)
+    minimum = np.maximum(required, 0.0)
+    try:
+        with np.errstate(over="raise", invalid="raise"):
+            total_stock = float(np.sum([d.stock for d in depots], dtype=float))
+            total_required = float(minimum.sum())
+    except FloatingPointError as error:
+        raise ValueError("Слишком большие объёмы для суммирования.") from error
+
+    violations = []
+    for j, station in enumerate(stations):
+        need, room = float(minimum[j]), float(available[j])
+        if greater(need, room):
+            violations.append(Violation(
+                "insufficient_capacity",
+                f"{station.id}: требуется поставить минимум {need:g} м³, "
+                f"свободно только {room:g} м³.",
+                need - room,
+            ))
+
+    if greater(total_required, total_stock):
+        violations.append(Violation(
+            "insufficient_stock",
+            f"Требуется {total_required:g} м³, "
+            f"общий запас нефтебаз — {total_stock:g} м³.",
+            total_required - total_stock,
+        ))
+
+    return FeasibilityReport(
+        station_ids=tuple(s.id for s in stations),
+        minimum_delivery=minimum,
+        available_capacity=available,
+        total_stock=total_stock,
+        total_required=total_required,
+        violations=tuple(violations),
+    )
+
+
+def build_constraints(
+    depots: list[Depot],
+    stations: list[Station],
+) -> LinearConstraints:
+    """Сформировать A_ub @ x <= b_ub и границы x >= 0.
+
+    Вектор x разворачивается по строкам: x11, ..., x1n, x21, ..., xmn.
+    Блоки строк: запасы нефтебаз, минимум на АЗС, вместимость на АЗС.
+    Матрицы строятся и для корректно заданной, но невыполнимой задачи.
+    """
+    validate_data(depots, stations)
+    required, available = _station_limits(stations)
+    m, n = len(depots), len(stations)
+    A_ub = np.zeros((m + 2 * n, m * n), dtype=float)
+
+    for i in range(m):
+        A_ub[i, i * n:(i + 1) * n] = 1.0
+    for j in range(n):
+        A_ub[m + j, j::n] = -1.0
+        A_ub[m + n + j, j::n] = 1.0
+
+    # Сохраняем исходное r-d-s, даже если минимальная поставка равна нулю.
+    b_ub = np.concatenate((
+        np.array([d.stock for d in depots], dtype=float),
+        -required,
+        available,
+    ))
+    return LinearConstraints(
+        A_ub=A_ub,
+        b_ub=b_ub,
+        bounds=tuple((0.0, None) for _ in range(m * n)),
+        variable_ids=tuple((d.id, s.id) for d in depots for s in stations),
+        row_labels=tuple(
+            [f"depot_stock:{d.id}" for d in depots]
+            + [f"station_safety:{s.id}" for s in stations]
+            + [f"station_capacity:{s.id}" for s in stations]
+        ),
+    )

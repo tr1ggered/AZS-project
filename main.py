@@ -1,4 +1,4 @@
-from constaints import check_plan
+from constraints import build_constraints, check_feasibility, check_plan
 from models import Depot, Station
 
 
@@ -20,6 +20,27 @@ def main() -> None:
     ]
 
     try:
+        report = check_feasibility(depots, stations)
+        print("Минимальные поставки, м³:", report.minimum_delivery.tolist())
+        print("Свободная вместимость, м³:", report.available_capacity.tolist())
+        print(
+            f"Общий запас: {report.total_stock:g} м³; "
+            f"потребность в поставках: {report.total_required:g} м³."
+        )
+        if not report.feasible:
+            print("Задача невыполнима при текущих данных:")
+            for violation in report.violations:
+                print(f"{violation.message} Нехватка: {violation.amount:g} м³.")
+            return
+
+        print("Условия выполнимости задачи пройдены с численным допуском.")
+        system = build_constraints(depots, stations)
+        print("Порядок переменных:", system.variable_ids)
+        print("A_ub:")
+        print(system.A_ub)
+        print("b_ub:", system.b_ub)
+        print("Границы переменных:", system.bounds)
+
         violations = check_plan(depots, stations, deliveries)
     except ValueError as error:
         print(f"Ошибка входных данных: {error}")
