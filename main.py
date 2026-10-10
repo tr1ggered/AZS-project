@@ -1,8 +1,10 @@
 import argparse
+from pathlib import Path
 from statistics import median
 from time import perf_counter
-from models import Depot, Station
+
 from optimizer import optimize_plan
+from serialization import load_problem, save_result
 
 
 def compare_methods(depots, stations, costs, runs: int) -> None:
@@ -85,54 +87,44 @@ def main() -> None:
         default=5,
         help="Количество измеряемых запусков каждого режима",
     )
+    parser.add_argument(
+        "--input",
+        type=Path,
+        default=Path(__file__).resolve().parent / "data" / "example.json",
+        help="JSON-файл с исходными данными",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Сохранить результат одиночного расчёта в JSON",
+    )
     args = parser.parse_args()
     if args.runs < 1:
         parser.error("--runs должен быть положительным числом")
-
-    depots = [
-        Depot(id="B1", stock=120),
-        Depot(id="B2", stock=100),
-        Depot(id="B3", stock=110),
-        Depot(id="B4", stock=90),
-        Depot(id="B5", stock=80),
-    ]
-
-    stations = [
-        Station(id="S1", remaining=10, demand=30, safety=5, capacity=60),
-        Station(id="S2", remaining=15, demand=45, safety=8, capacity=80),
-        Station(id="S3", remaining=8, demand=25, safety=5, capacity=50),
-        Station(id="S4", remaining=20, demand=50, safety=10, capacity=90),
-        Station(id="S5", remaining=12, demand=35, safety=6, capacity=65),
-        Station(id="S6", remaining=25, demand=40, safety=8, capacity=75),
-        Station(id="S7", remaining=5, demand=30, safety=5, capacity=55),
-        Station(id="S8", remaining=18, demand=55, safety=10, capacity=95),
-        Station(id="S9", remaining=10, demand=28, safety=6, capacity=55),
-        Station(id="S10", remaining=22, demand=42, safety=8, capacity=80),
-        Station(id="S11", remaining=15, demand=38, safety=7, capacity=70),
-        Station(id="S12", remaining=6, demand=22, safety=5, capacity=45),
-        Station(id="S13", remaining=30, demand=20, safety=5, capacity=70),
-        Station(id="S14", remaining=12, demand=48, safety=9, capacity=90),
-        Station(id="S15", remaining=8, demand=32, safety=6, capacity=60),
-    ]
-
-    # Строки: B1–B5. Столбцы: S1–S15. Тарифы в руб./м³.
-    costs = [
-        [220, 250, 300, 500, 550, 600, 700, 750, 800, 850, 900, 950, 650, 720, 780],
-        [380, 320, 260, 230, 280, 350, 550, 600, 650, 700, 750, 800, 520, 590, 660],
-        [650, 600, 550, 450, 380, 300, 240, 280, 330, 480, 520, 600, 380, 450, 520],
-        [850, 800, 750, 680, 600, 520, 400, 330, 260, 220, 270, 350, 500, 360, 420],
-        [920, 880, 830, 780, 720, 650, 580, 520, 460, 400, 330, 250, 300, 220, 240],
-    ]
+    if args.compare and args.output is not None:
+        parser.error("--output используется только для одиночного расчёта")
+    if args.output is not None and args.output.resolve() == args.input.resolve():
+        parser.error("--input и --output должны быть разными файлами")
 
     try:
+        depots, stations, costs = load_problem(args.input)
+
         if args.compare:
             compare_methods(depots, stations, costs, args.runs)
             return
 
         result = optimize_plan(depots, stations, costs, method=args.method)
-    except ValueError as error:
+    except (OSError, ValueError) as error:
         print(f"Ошибка входных данных: {error}")
         return
+
+    if args.output is not None:
+        try:
+            save_result(args.output, result, depots, stations)
+        except (OSError, ValueError) as error:
+            print(f"Ошибка сохранения результата: {error}")
+        else:
+            print(f"Результат сохранён: {args.output}")
 
     print(result.message)
     if result.metrics is not None:
