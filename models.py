@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 from numpy.typing import NDArray
@@ -48,3 +49,31 @@ class LinearConstraints:
     bounds: tuple[tuple[float, float | None], ...]
     variable_ids: tuple[tuple[str, str], ...]  # (нефтебаза, АЗС) для столбцов
     row_labels: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class PlanSummary:
+    depot_shipped: NDArray[np.float64]
+    depot_remaining: NDArray[np.float64]
+    station_received: NDArray[np.float64]
+    station_after_delivery: NDArray[np.float64]
+    station_remaining: NDArray[np.float64]
+    route_costs: NDArray[np.float64]
+
+
+@dataclass(frozen=True)
+class SolverMetrics:
+    method: str
+    solver_seconds: float
+    iterations: int
+    crossover_iterations: int
+
+
+@dataclass(frozen=True)
+class OptimizationResult:
+    status: Literal["optimal", "infeasible", "limit", "error"]
+    message: str
+    deliveries: NDArray[np.float64] | None = None
+    total_cost: float | None = None
+    summary: PlanSummary | None = None
+    metrics: SolverMetrics | None = None
