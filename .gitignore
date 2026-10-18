@@ -12,5 +12,3 @@ __pycache__/
 .env
 .env.*
 !.env.example
-
-DEVELOPMENT_PLAN.md

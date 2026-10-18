@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Оптимизация поставок топлива</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #f3f5f7;
+      color: #17212b;
+      font: 16px/1.5 system-ui, sans-serif;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 24px;
+    }
+
+    section {
+      background: white;
+      border: 1px solid #dce2e8;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    h1, h2 {
+      line-height: 1.2;
+    }
+
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      min-width: 0;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+    }
+
+    textarea {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 300px;
+      padding: 12px;
+      font: 14px/1.5 monospace;
+    }
+
+    button, select {
+      padding: 10px 14px;
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    #message {
+      white-space: pre-wrap;
+    }
+
+    #message.error {
+      color: #b42318;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #dce2e8;
+      padding: 8px;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #edf2f6;
+    }
+
+    td {
+      text-align: right;
+    }
+
+    pre {
+      overflow: auto;
+      font-size: 13px;
+    }
+  </style>
+
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+
+<body>
+  <main>
+    <h1>Оптимизация поставок топлива</h1>
+    <p>Один вид топлива, один период. Поставка выполняется до потребления.</p>
+
+    <section>
+      <h2>Исходные данные</h2>
+
+      <fieldset id="controls">
+        <label for="file">Загрузить сценарий JSON</label>
+        <input id="file" type="file" accept=".json,application/json">
+
+        <label for="scenario">
+          Сценарий — можно редактировать перед расчётом
+        </label>
+        <textarea
+          id="scenario"
+          spellcheck="false"
+          placeholder="Выбери data/example.json или вставь сценарий сюда"
+        ></textarea>
+
+        <label for="method">Режим решателя</label>
+        <select id="method">
+          <option value="highs">HiGHS — автоматический выбор</option>
+          <option value="highs-ds">Двойственный симплекс-метод</option>
+          <option value="highs-ipm">Метод внутренней точки</option>
+        </select>
+
+        <div class="actions">
+          <button id="validate" type="button">Проверить данные</button>
+          <button id="optimize" type="button">Рассчитать план</button>
+        </div>
+      </fieldset>
+    </section>
+
+    <section aria-labelledby="result-title">
+      <h2 id="result-title">Результат</h2>
+
+      <p id="message" role="status" aria-live="polite">
+        Загрузи сценарий для начала работы.
+      </p>
+
+      <p id="metrics"></p>
+      <div id="tables"></div>
+
+      <details id="response" hidden>
+        <summary>Полный ответ API в JSON</summary>
+        <pre id="json"></pre>
+      </details>
+    </section>
+  </main>
+</body>
+</html>
