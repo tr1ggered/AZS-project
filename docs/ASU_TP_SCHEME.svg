@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1180" viewBox="0 0 1400 1180" role="img" aria-labelledby="title description">
+<title id="title">Упрощённая структурная схема АСУ ТП с модулем оптимизации поставок</title>
+<desc id="description">Схема по предоставленному образцу: КИС и модуль оптимизации, уровень диспетчеризации, уровень САУ, три типовых контура исполнительный механизм — объект — датчик. Вниз передаются план, подтверждённые задания и управляющие воздействия; вверх — измерения и состояния. Объекты О1, О2 и Он обозначают нефтебазы и АЗС. Аппаратная интеграция является предлагаемой.</desc>
+<metadata>{&quot;project&quot;:&quot;AZS-project&quot;,&quot;date&quot;:&quot;2026-10-19&quot;,&quot;reference&quot;:&quot;Предоставленный пользователем рисунок&quot;,&quot;status&quot;:&quot;Упрощённая концептуальная схема встраивания; аппаратура к приложению не подключена&quot;}</metadata>
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#284B66"/></marker>
+</defs>
+<rect width="1400" height="1180" fill="#FFFFFF"/>
+<g font-family="DejaVu Sans, sans-serif">
+<path d="M 535,230 L 535,340" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 865,340 L 865,230" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 535,440 L 535,560" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 865,560 L 865,440" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 245,660 L 245,790" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 415,790 L 415,660" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 245,860 L 245,940" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 415,940 L 415,860" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 635,660 L 635,790" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 805,790 L 805,660" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 635,860 L 635,940" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 805,940 L 805,860" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 1025,660 L 1025,790" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 1195,790 L 1195,660" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 1025,860 L 1025,940" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 1195,940 L 1195,860" fill="none" stroke="#284B66" stroke-width="2.4" marker-end="url(#arrow)"/>
+<rect x="370" y="120" width="660" height="110" rx="3" fill="#EFF7F2" stroke="#284B66" stroke-width="2"/>
+<text x="700" y="160" font-size="26" fill="#20384C" text-anchor="middle" font-weight="700">КИС · модуль оптимизации поставок</text>
+<text x="700" y="197" font-size="19" fill="#20384C" text-anchor="middle">Расчёт плана x[i,j], стоимости и остатков</text>
+<rect x="150" y="340" width="1100" height="100" rx="3" fill="#F4F8FC" stroke="#284B66" stroke-width="2"/>
+<text x="700" y="380" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">Уровень диспетчеризации</text>
+<text x="700" y="417" font-size="20" fill="#20384C" text-anchor="middle">АРМ диспетчера / SCADA · подтверждение и контроль выполнения плана</text>
+<rect x="150" y="560" width="1100" height="100" rx="3" fill="#F4F8FC" stroke="#284B66" stroke-width="2"/>
+<text x="700" y="600" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">Уровень САУ</text>
+<text x="700" y="637" font-size="20" fill="#20384C" text-anchor="middle">Локальные контроллеры нефтебаз и АЗС</text>
+<rect x="185" y="790" width="120" height="70" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="245" y="835" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">ИМ</text>
+<rect x="355" y="790" width="120" height="70" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="415" y="835" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">Д</text>
+<rect x="185" y="940" width="290" height="85" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="330" y="975" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">О₁</text>
+<text x="330" y="1005" font-size="18" fill="#20384C" text-anchor="middle">Нефтебаза / АЗС</text>
+<rect x="575" y="790" width="120" height="70" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="635" y="835" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">ИМ</text>
+<rect x="745" y="790" width="120" height="70" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="805" y="835" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">Д</text>
+<rect x="575" y="940" width="290" height="85" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="720" y="975" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">О₂</text>
+<text x="720" y="1005" font-size="18" fill="#20384C" text-anchor="middle">Нефтебаза / АЗС</text>
+<rect x="965" y="790" width="120" height="70" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="1025" y="835" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">ИМ</text>
+<rect x="1135" y="790" width="120" height="70" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="1195" y="835" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">Д</text>
+<rect x="965" y="940" width="290" height="85" rx="3" fill="#FFFFFF" stroke="#284B66" stroke-width="2"/>
+<text x="1110" y="975" font-size="28" fill="#20384C" text-anchor="middle" font-weight="700">Оₙ</text>
+<text x="1110" y="1005" font-size="18" fill="#20384C" text-anchor="middle">Нефтебаза / АЗС</text>
+<text x="50" y="49" font-size="31" fill="#20384C" text-anchor="start" font-weight="700">Структурная схема АСУ ТП с модулем оптимизации</text>
+<text x="50" y="82" font-size="19" fill="#20384C" text-anchor="start">Нефтебазы и сеть АЗС · управляющие и измерительные информационные потоки</text>
+<text x="515" y="292" font-size="20" fill="#20384C" text-anchor="end">План поставок</text>
+<text x="885" y="292" font-size="20" fill="#20384C" text-anchor="start">Остатки, факт операций</text>
+<text x="515" y="508" font-size="20" fill="#20384C" text-anchor="end">Задания на отпуск / приёмку</text>
+<text x="885" y="508" font-size="20" fill="#20384C" text-anchor="start">Измерения, состояния</text>
+<text x="225" y="734" font-size="18" fill="#20384C" text-anchor="end">Управление</text>
+<text x="435" y="734" font-size="18" fill="#20384C" text-anchor="start">Измерения</text>
+<text x="915" y="838" font-size="32" fill="#20384C" text-anchor="middle">…</text>
+<text x="915" y="994" font-size="32" fill="#20384C" text-anchor="middle">…</text>
+<text x="50" y="1068" font-size="18" fill="#20384C" text-anchor="start">КИС — корпоративная информационная система; САУ — система автоматического управления.</text>
+<text x="50" y="1098" font-size="18" fill="#20384C" text-anchor="start">ИМ — исполнительные механизмы; Д — датчики уровня и расхода; О₁…Оₙ — нефтебазы и АЗС.</text>
+<text x="50" y="1130" font-size="18" fill="#20384C" text-anchor="start">Вниз — задания и управляющие воздействия; вверх — измерения и состояния объектов.</text>
+<text x="50" y="1162" font-size="17" fill="#20384C" text-anchor="start">Схема встраивания: обмен с оборудованием в текущем проекте не реализован.</text>
+</g>
+</svg>
+
