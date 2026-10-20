@@ -7,6 +7,7 @@ const metrics = document.getElementById("metrics");
 const tables = document.getElementById("tables");
 const responseBlock = document.getElementById("response");
 const jsonOutput = document.getElementById("json");
+const costsTable = document.getElementById("costs-table");
 
 const numbers = new Intl.NumberFormat("ru-RU", {
   maximumFractionDigits: 3,
@@ -29,7 +30,7 @@ function showError(text) {
 }
 
 
-function addTable(title, headers, rows) {
+function addTable(title, headers, rows, target = tables) {
   const heading = document.createElement("h3");
   heading.textContent = title;
 
@@ -67,7 +68,69 @@ function addTable(title, headers, rows) {
   }
 
   wrapper.append(table);
-  tables.append(heading, wrapper);
+  target.append(heading, wrapper);
+}
+
+
+function renderCostMatrix() {
+  costsTable.replaceChildren();
+
+  if (!editor.value.trim()) {
+    const hint = document.createElement("p");
+    hint.textContent = "Загрузи сценарий, чтобы увидеть матрицу тарифов.";
+    costsTable.append(hint);
+    return;
+  }
+
+  try {
+    const scenario = JSON.parse(editor.value);
+
+    if (!scenario || typeof scenario !== "object") {
+      throw new Error("Ожидается объект сценария.");
+    }
+
+    const {depots, stations, costs} = scenario;
+
+    if (!Array.isArray(depots) || depots.length === 0
+        || !Array.isArray(stations) || stations.length === 0) {
+      throw new Error("Нужны непустые массивы depots и stations.");
+    }
+
+    const validIds = [...depots, ...stations].every(
+      item => item && typeof item.id === "string" && item.id.trim() !== "",
+    );
+
+    if (!validIds) {
+      throw new Error("У каждой нефтебазы и АЗС должен быть id.");
+    }
+
+    const validCosts = Array.isArray(costs)
+      && costs.length === depots.length
+      && costs.every(row =>
+        Array.isArray(row)
+        && row.length === stations.length
+        && row.every(value =>
+          typeof value === "number"
+          && Number.isFinite(value)
+          && value >= 0,
+        ),
+      );
+
+    if (!validCosts) {
+      throw new Error("Проверь размеры costs и неотрицательность тарифов.");
+    }
+
+    addTable(
+      "Матрица тарифов доставки, руб./м³",
+      ["Нефтебаза / АЗС", ...stations.map(station => station.id)],
+      depots.map((depot, i) => [depot.id, ...costs[i]]),
+      costsTable,
+    );
+  } catch (error) {
+    const hint = document.createElement("p");
+    hint.textContent = "Таблица не показана: " + error.message;
+    costsTable.append(hint);
+  }
 }
 
 
@@ -196,6 +259,7 @@ fileInput.addEventListener("change", async () => {
   } finally {
     controls.disabled = false;
     fileInput.value = "";
+    renderCostMatrix();
   }
 });
 
@@ -218,3 +282,7 @@ document.getElementById("validate").addEventListener("click", () => {
 document.getElementById("optimize").addEventListener("click", () => {
   sendRequest("optimize");
 });
+
+editor.addEventListener("input", renderCostMatrix);
+
+renderCostMatrix();

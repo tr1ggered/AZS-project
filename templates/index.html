@@ -133,6 +133,14 @@
           placeholder="Выбери data/example.json или вставь сценарий сюда"
         ></textarea>
 
+        <p>
+          Строки таблицы — нефтебазы, столбцы — АЗС.
+          Тарифы задаются в руб./м³.
+          Для изменения тарифа отредактируй раздел <code>costs</code> в JSON.
+        </p>
+
+        <div id="costs-table" aria-live="polite"></div>
+
         <label for="method">Режим решателя</label>
         <select id="method">
           <option value="highs">HiGHS — автоматический выбор</option>
